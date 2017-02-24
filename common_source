@@ -1,0 +1,17 @@
+
+
+# base directory is current directory
+NINJA_HOME="`dirname ${BASH_SOURCE[0]}`"
+export NINJA_HOME
+PATH=$NINJA_HOME:$NINJA_HOME/scripts:$PATH
+export PATH
+
+NINJA_FUN_DIR="$NINJA_HOME/scripts/function.d"
+export NINJA_FUN_DIR
+
+for function in $NINJA_FUN_DIR/*; do
+  if [ ! -d $function ]; then
+    . $function
+  fi
+done
+

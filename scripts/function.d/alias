@@ -1,0 +1,5 @@
+  alias cls='clear'
+  alias l='ls -l'
+  alias lll='ls -lah'
+
+  alias mvn-with-jboss-repo='mvn -s $NINJA_FUN_DIR/config/jboss-public-settings.xml'
