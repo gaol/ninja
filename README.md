@@ -10,6 +10,13 @@ Ninja contains some common scripts in Linux system that can make your work more 
 
 > `. ninja/common_source`
 
+> NOTE: you can simply source it by specifying the file location when start the login bash:
+<pre>
+if [ -f $HOME/bin/common_source ]; then
+	. $HOME/bin/common_source
+fi
+</pre>
+
 That is All.
 
 ## Adding more scripts:
