@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo -e "Set up reactive-native development in Fedora based Linux System"
+
+if [ ! -f /etc/redhat-release ]; then
+  echo -e "This works only on Fedora based Linux distribution"
+  exit
+fi
+
+if [ $(id|cut -d '=' -f2|cut -d '(' -f1) != 0 ]; then
+  echo -e "Must executed as root"
+  exit
+fi
+
+dnf install python-devel zlib.i686 libstdc++.i686 rpm-build ruby-devel rubygems npm nodejs gcc-c++ make automake 
+
+npm install -g react-native-cli
+
+
