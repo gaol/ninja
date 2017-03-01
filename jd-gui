@@ -1,0 +1,5 @@
+#!/bin/sh
+
+java -jar $NINJA_HOME/jd-gui-1.4.0.jar $*
+
+
