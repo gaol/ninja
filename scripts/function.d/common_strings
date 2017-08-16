@@ -6,3 +6,12 @@ string_to_upper() {
     echo $1 |awk '{print toupper($0)}'
   fi
 }
+
+#
+# prints out lower case of a string
+#
+string_to_lower() {
+  if [ "$1" != "" ]; then
+    echo $1 |awk '{print tolower($0)}'
+  fi
+}

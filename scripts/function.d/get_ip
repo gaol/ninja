@@ -1,4 +1,4 @@
-. commons
+. $NINJA_FUN_DIR/commons
 
 #
 #  get_ip_v4_all print out all IP V4 address
