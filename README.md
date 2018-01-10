@@ -5,7 +5,7 @@ Ninja contains some common scripts in Linux bash that can make your work more ef
 
 Run the command:
 
-> curl -s https://github.com/gaol/ninja/raw/master/install.sh | bash
+> curl -s -L https://github.com/gaol/ninja/raw/master/install.sh | bash
 
 ## What it provides
 
