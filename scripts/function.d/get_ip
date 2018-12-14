@@ -40,3 +40,18 @@ get_default_mac_addr() {
     echo $fupper
   fi
 }
+
+#
+# Gets a virtual VM IP address
+#
+get_virt_ip_addr() {
+    VM="$1"
+    if [ "$VM" == "" ]; then
+      echo -e "[Usage]: get_virt_ip_addr <VM-NAME>"
+      return
+    fi
+    mac=$(virsh --connect qemu:///system dumpxml $VM | grep "mac address" | sed "s/.*'\(.*\)'.*/\1/g")
+    ip=$(arp -an | grep "$mac" | awk '{ gsub(/[\(\)]/,"",$2); print $2 }')
+    echo "$ip"
+}
+

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+echo -e "Set up jupyter notebook in Fedora based Linux System"
+
+if [ ! -f /etc/redhat-release ]; then
+  echo -e "This works only on Fedora based Linux distribution"
+  exit
+fi
+
+echo -e "Download and install Anaconda"
+wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh
+chmod a+x Anaconda3-5.0.1-Linux-x86_64.sh
+./Anaconda3-5.0.1-Linux-x86_64.sh
+
+sudo pip install pymongo dnspython ipyparallel
+
+echo -e "\n==============================\n"
+cat <<EOF
+  Please run the following command:
+
+> change current directory to the notebook directory
+
+> conda create -n <NOTE-BOOK-NAME>
+
+> source activate <NOTE-BOOK-NAME>
+
+> jupyter notebook
+EOF
+
+echo -e "\n==============================\n"
