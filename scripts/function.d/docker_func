@@ -1,0 +1,30 @@
+. $NINJA_FUN_DIR/commons
+
+#
+# delete all docker none images
+#
+docker-delete-none-images() {
+  if [ "$(docker images -f "dangling=true" -q)" != "" ]; then
+    for img in $(docker images -f "dangling=true" -q); do
+      if [ "$(docker ps --all -q -f "ancestor=$img")" != "" ]; then
+        for cid in $(docker ps --all -q -f "ancestor=$img"); do
+          echo -e "stop and delete container: $cid"
+          docker stop $cid
+          docker rm $cid
+        done
+      fi
+    done
+  docker rmi $(docker images -f "dangling=true" -q)
+  fi
+}
+
+#
+# delete all docker containers.
+# Stop them first, then delete them.
+#
+docker-delete-all-containers() {
+  if [ "$(docker ps -aq)" != "" ]; then
+    docker stop $(docker ps -aq)
+    docker rm $(docker ps -aq)
+  fi
+}
