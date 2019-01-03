@@ -1,1 +1,9 @@
 . $NINJA_FUN_DIR/common_strings
+
+install_developer_packages() {
+  if [ "`id -u`" != "0" ]; then
+    echo -e "Must run as root"
+    return
+  fi
+  yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute
+}

@@ -1,0 +1,8 @@
+start_db2_docker() {
+  echo -e "In the docker container, running: \n"
+  echo -e "\tsu - db2inst1"
+  echo -e "\tdb2start"
+  echo -e "\tdb2 create db testdb\n"
+  echo -e "Then you can connect the db2 server via jdbc:db2://localhost:50000/testdb:user=db2inst1;password=db2inst1-pwd\n"
+  docker run --rm -it -p 50000:50000 -e DB2INST1_PASSWORD=db2inst1-pwd -e LICENSE=accept ibmcom/db2express-c:latest bash
+}

@@ -1,0 +1,6 @@
+
+convert_media() {
+  echo -e "Workdir: `pwd`"
+  echo -e "docker run -v `pwd`:/tmp/workdir jrottenberg/ffmpeg $*"
+  docker run -v `pwd`:/tmp/workdir  jrottenberg/ffmpeg $*
+}
