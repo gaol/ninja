@@ -1,9 +1,108 @@
-. $NINJA_FUN_DIR/common_strings
 
-install_developer_packages() {
+#
+# common functions maybe used by other functions
+#
+
+root_is_required() {
   if [ "`id -u`" != "0" ]; then
     echo -e "Must run as root"
-    return
+    return -1
   fi
+  return 0
+}
+
+ninja-install_developer_packages() {
+  ((root_is_required)) || return 1
   yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute
 }
+
+
+#
+# prints out upper case of a string
+#
+ninja-string_to_upper() {
+  if [ "$1" != "" ]; then
+    echo $1 |awk '{print toupper($0)}'
+  fi
+}
+
+#
+# prints out lower case of a string
+#
+ninja-string_to_lower() {
+  if [ "$1" != "" ]; then
+    echo $1 |awk '{print tolower($0)}'
+  fi
+}
+
+
+COLOR_ORIGIN="\e[0m"
+COLOR_RED="\e[31m"
+COLOR_YELLOW="\e[33m"
+COLOR_BLUE="\e[34m"
+
+#
+# prints string with colors
+#
+# $1 is the string, $2 is the color
+#
+ninja-print_with_color() {
+  str_color="$(ninja-string_to_lower $2)"
+  str="$1"
+  case $str_color in
+  "red"*)
+    str="$COLOR_RED$1$COLOR_ORIGIN"
+    ;;
+  "blue"*)
+    str="$COLOR_BLUE$1$COLOR_ORIGIN"
+    ;;
+  "yellow"*)
+    str="$COLOR_YELLOW$1$COLOR_ORIGIN"
+    ;;
+  *)
+    ;;
+  esac
+  echo -e "$str"
+}
+
+ninja-date() {
+  str=`date "+%Y-%m-%d %H:%M:%S"`
+  echo -e "$str"
+}
+
+#
+# DEBUG
+# $1: the information to log in debug level
+#
+ninja-debug() {
+  str="[DEBUG] `ninja-date` $1"
+  ninja-print_with_color "$str" "blue"
+}
+
+#
+# INFO
+# $1: the information to log in info level
+#
+ninja-info() {
+  str="[INFO] `ninja-date` $1"
+  ninja-print_with_color "$str"
+}
+
+#
+# WARN
+# $1: the information to log in warning level
+#
+ninja-warn() {
+  str="[WARN] `ninja-date` $1"
+  ninja-print_with_color "$str" "yellow"
+}
+
+#
+# ERROR
+# $1: the information to log in error level
+#
+ninja-error() {
+  str="[ERROR] `ninja-date` $1"
+  ninja-print_with_color "$str" "red"
+}
+

@@ -3,7 +3,7 @@
 #
 # delete all docker none images
 #
-docker-delete-none-images() {
+ninja-docker_delete_none_images() {
   if [ "$(docker images -f "dangling=true" -q)" != "" ]; then
     for img in $(docker images -f "dangling=true" -q); do
       if [ "$(docker ps --all -q -f "ancestor=$img")" != "" ]; then
@@ -22,7 +22,7 @@ docker-delete-none-images() {
 # delete all docker containers.
 # Stop them first, then delete them.
 #
-docker-delete-all-containers() {
+ninja-docker_delete_all_containers() {
   if [ "$(docker ps -aq)" != "" ]; then
     docker stop $(docker ps -aq)
     docker rm $(docker ps -aq)

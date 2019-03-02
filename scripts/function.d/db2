@@ -1,4 +1,6 @@
-start_db2_docker() {
+. $NINJA_FUN_DIR/commons
+
+ninja-start_db2_docker() {
   echo -e "In the docker container, running: \n"
   echo -e "\tsu - db2inst1"
   echo -e "\tdb2start"
