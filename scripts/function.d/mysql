@@ -2,10 +2,56 @@
 
 ninja-start_mariadb_docker() {
   echo -e "\nThis will start a mariadb server in a docker container in interactive mode, \nand the docker will get removed when stopped."
-  echo -e "\nIf you want to start it as a daemon, using command:\n"
-  echo -e "\tdocker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=my-db -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword docker.io/mariadb:10.3"
+  echo -e "\nUsage: start_mariadb_docker --port 3306 --root-pwd the-root-pwd --db_name mydb --db_user myuser --db_pass mypassword --sql_version 10.3 --volume /opt/data/mysql/keycloak"
   echo -e ""
-  docker run --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=my-db -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword docker.io/mariadb:10.3
+
+  mysql_port="3306"
+  root_password="root-password"
+  db_name="mydb"
+  db_user="myuser"
+  db_pass="mypassword"
+  sql_version="10.3"
+  volume="/opt/data/mysql/keycloak"
+
+  while (( "$#" )); do
+    case "$1" in
+    "--port"*)
+      mysql_port="$2"
+      ;;
+    "--root-pwd"*)
+      root_password="$2"
+      ;;
+    "--db_name"*)
+      db_name="$2"
+      ;;
+    "--db_user"*)
+      db_user="$2"
+      ;;
+    "--db_pass"*)
+      db_pass="$2"
+      ;;
+    "--sql_version"*)
+      sql_version="$2"
+      ;;
+    "--volume"*)
+      volume="$2"
+      ;;
+    *)
+      ;;
+    esac
+
+    shift
+    shift
+  done
+
+  echo -e "Going to use the following command to start the mysql server:"
+  docker_run_opts="--rm -p ${mysql_port}:3306 -e MYSQL_ROOT_PASSWORD=${root_password} -e MYSQL_DATABASE=${db_name} -e MYSQL_USER=${db_user} -e MYSQL_PASSWORD=${db_pass}"
+  if [ -d "$volume" ]; then
+    docker_run_opts="$docker_run_opts -v ${volume}:/var/lib/mysql"
+  fi
+  echo -e "\n\tdocker run ${docker_run_opts} docker.io/mariadb:${sql_version}"
+
+  docker run ${docker_run_opts} docker.io/mariadb:${sql_version}
 }
 
 #
