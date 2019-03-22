@@ -3,7 +3,9 @@
 ninja-convert_media() {
   echo -e "Workdir: `pwd`"
   echo -e "Using the command: 'docker run --rm -v `pwd`:/tmp/workdir jrottenberg/ffmpeg $*'"
-  echo -e "\nExample command to cut video: \n\t$0 -i input.mkv -ss hh:mm:ss -to hh:mm:ss -c copy output.mkv"
+  echo -e "\nExample command to cut video: \n\t$1 -i input.mkv -ss hh:mm:ss -to hh:mm:ss -c copy output.mkv"
   echo -e "\nPassing -an to diable audio"
-  docker run --rm -v `pwd`:/tmp/workdir  jrottenberg/ffmpeg $*
+  if [ $# -gt 0 ]; then
+    docker run --rm -v `pwd`:/tmp/workdir  jrottenberg/ffmpeg $*
+  fi
 }

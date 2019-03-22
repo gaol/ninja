@@ -1,0 +1,110 @@
+. $NINJA_FUN_DIR/commons
+
+ninja-start_mariadb_docker() {
+  echo -e "\nThis will start a mariadb server in a docker container in interactive mode, \nand the docker will get removed when stopped."
+  echo -e "\nIf you want to start it as a daemon, using command:\n"
+  echo -e "\tdocker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=my-db -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword docker.io/mariadb:10.3"
+  echo -e ""
+  docker run --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=my-db -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword docker.io/mariadb:10.3
+}
+
+#
+# $1: jdbc type: mysql, postgresql, mariadb
+# $2: jdbc version
+# it prints url that can be downloaded from maven central
+__jdbc_driver_url_from_mvn__() {
+  MVN_CENTRAL="http://repo.maven.apache.org/maven2"
+  case "$1" in
+    "mysql"*)
+      echo -e "${MVN_CENTRAL}/mysql/mysql-connector-java/$2/mysql-connector-java-$2.jar"
+      ;;
+    "postgresql"*)
+      echo -e "${MVN_CENTRAL}/org/postgresql/postgresq/$2/postgresq-$2.jar"
+      ;;
+    "mariadb"*)
+      echo -e "${MVN_CENTRAL}/org/mariadb/jdbc/mariadb-java-client/$2/mariadb-java-client-$2.jar"
+      ;;
+    *)
+      ;;
+  esac
+}
+
+ninja-install_jdbc_module() {
+  echo -e "\nThis installs a specified JDBC driver to WildFly/JBoss EAP module"
+  echo -e "Common used JDBC drivers:\n"
+  echo -e "JDBC Driver \t\t   Driver Version"
+  echo -e "mysql       \t\t   5.1.47"
+  echo -e "postgresql  \t\t   42.2.5"
+  echo -e "mariadb     \t\t   2.4.1"
+  echo -e "\n"
+
+  echo -e "Usage: ninja-install_jdbc_module --jdbc mysql --version 5.1.47 --jboss_home ~/softwares/jboss-eap/jboss-eap-7.1 --jboss_module org.mysql"
+
+  jdbc="mysql"
+  jdbc_version="5.1.47"
+  WF_HOME="$JBOSS_HOME"
+  jboss_module="org.mysql"
+
+  while (( "$#" )); do
+    case "$1" in
+    "--jdbc"*)
+      jdbc="$2"
+      ;;
+    "--version"*)
+      jdbc_version="$2"
+      ;;
+    "--jboss_home"*)
+      WF_HOME="$2"
+      ;;
+    "--jboss_module"*)
+      jboss_module="$2"
+      ;;
+    *)
+      ;;
+    esac
+
+    shift
+    shift
+  done
+
+  jdbcurl="`__jdbc_driver_url_from_mvn__ $jdbc $jdbc_version`"
+  if [ "$jdbcurl" == "" ]; then
+    echo -e "Wrong jdbc specified: $jdbc $jdbc_version"
+    return
+  fi
+
+
+  jboss_module_base_dir="$WF_HOME/modules/system/layers/base"
+  [ ! -d $jboss_module_base_dir ] && echo -e "'$WF_HOME' is not a valid jboss home" && return 1
+  jboss_module_dir="${jboss_module_base_dir}/${jboss_module//\./\/}/main"
+  [ -f "${jboss_module_dir}/module.xml" ] && echo -e "jboss module: $jboss_module has been created already!" && return 1
+  echo -e "create jboss module directory: ${jboss_module_dir}"
+  mkdir -p ${jboss_module_dir}
+  
+  echo -e "Downloading jdbc driver jar from $jdbcurl to ${jboss_module_dir}"
+  wget -O ${jboss_module_dir}/$jdbc.jar "$jdbcurl"
+  if [ $? != 0 ]; then
+    echo -e "Failed to download jdbc driver from maven central repository"
+    return 1
+  fi
+cat > ${jboss_module_dir}/module.xml <<JB_MOD_XML
+<?xml version="1.0" ?>
+<module xmlns="urn:jboss:module:1.3" name="${jboss_module}">
+
+    <resources>
+        <resource-root path="$jdbc.jar"/>
+    </resources>
+
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+    </dependencies>
+</module>
+JB_MOD_XML
+  
+ echo -e "You have installed JDBC Driver of $jdbc to $WF_HOME with jboss module name: '$jboss_module'"
+ echo -e "\nYou can use the following JBOSS CLI command to configure your JDBC driver and datasource:"
+ echo -e "\n\t /subsystem=datasources/jdbc-driver=${jdbc}:add(driver-name=${jdbc},driver-module-name=${jboss_module})"
+ echo -e "\n\t data-source add --name=xxxDS --jndi-name=java:jboss/datasources/xxxDS --connection-properties={"url": "jdbc:XXX:localhost:port/xxxDS"} --driver-name=${jdbc} --datasource-class=XXX"
+
+}
