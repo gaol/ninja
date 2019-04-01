@@ -16,6 +16,32 @@ ninja-install_developer_packages() {
   yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute
 }
 
+ninja-install_designer_packages() {
+  ((root_is_required)) || return 1
+  yum install -y  gpick inkscape gimp ImageMagick
+}
+
+ninja-setup_ubuntu_aliyun_repo() {
+  ((root_is_required)) || return 1
+  cat <<EOF >/etc/apt/sources.list.d/aliyun.list
+  deb http://mirrors.aliyun.com/ubuntu/ xenial main
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial main
+
+  deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main
+
+  deb http://mirrors.aliyun.com/ubuntu/ xenial universe
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe
+  deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe
+
+  deb http://mirrors.aliyun.com/ubuntu/ xenial-security main
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main
+  deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe
+  deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe
+EOF
+}
+
 
 #
 # prints out upper case of a string

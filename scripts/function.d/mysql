@@ -1,17 +1,21 @@
 . $NINJA_FUN_DIR/commons
 
-ninja-start_mariadb_docker() {
-  echo -e "\nThis will start a mariadb server in a docker container in interactive mode, \nand the docker will get removed when stopped."
-  echo -e "\nUsage: start_mariadb_docker --port 3306 --root-pwd the-root-pwd --db_name mydb --db_user myuser --db_pass mypassword --sql_version 10.3 --volume /opt/data/mysql/keycloak"
+ninja-start_mysql_docker() {
+  ninja-info "This will start a mysql server in a docker container in daemon mode."
+  ninja-info "Typical docker containers are: mysql:5.7 , mariadb:10.3"
+  echo -e ""
+  ninja-info "Usage: start_mysql_docker --port 3306 --root-pwd the-root-pwd --db_name keycloak --db_user keycloak --db_pass keycloak --type mysql --sql_version 5.7 --volume /opt/data/mysql/keycloak --name local_mysql_docker_name"
   echo -e ""
 
   mysql_port="3306"
   root_password="root-password"
-  db_name="mydb"
-  db_user="myuser"
-  db_pass="mypassword"
-  sql_version="10.3"
-  volume="/opt/data/mysql/keycloak"
+  db_name=""
+  db_user=""
+  db_pass=""
+  sql_version="5.7"
+  volume=""
+  docker_container_name="local_mysql"
+  type="mysql"
 
   while (( "$#" )); do
     case "$1" in
@@ -36,6 +40,12 @@ ninja-start_mariadb_docker() {
     "--volume"*)
       volume="$2"
       ;;
+    "--name"*)
+      docker_container_name="$2"
+      ;;
+    "--type"*)
+      type="$2"
+      ;;
     *)
       ;;
     esac
@@ -44,14 +54,27 @@ ninja-start_mariadb_docker() {
     shift
   done
 
-  echo -e "Going to use the following command to start the mysql server:"
-  docker_run_opts="--rm -p ${mysql_port}:3306 -e MYSQL_ROOT_PASSWORD=${root_password} -e MYSQL_DATABASE=${db_name} -e MYSQL_USER=${db_user} -e MYSQL_PASSWORD=${db_pass}"
+  [ "$db_name" == "" -o "$db_user" == "" -o "$db_pass" == "" ] && ninja-warn "db_name and db_user and db_pass must be specified." && return 1
+  [ "$type" != "mysql" -a "$type" != "mariadb" ] && ninja-warn "Docker Image must be one of 'mysql' and 'mariadb'" && return 1
+
+  ninja-info "Going to use the following command to start the mysql server:"
+
+  docker_run_opts="--rm -p ${mysql_port}:3306 -e MYSQL_ROOT_PASSWORD=${root_password} -e MYSQL_DATABASE=${db_name} -e MYSQL_USER=${db_user} -e MYSQL_PASSWORD=${db_pass} --name ${docker_container_name} "
+
   if [ -d "$volume" ]; then
     docker_run_opts="$docker_run_opts -v ${volume}:/var/lib/mysql"
   fi
-  echo -e "\n\tdocker run ${docker_run_opts} docker.io/mariadb:${sql_version}"
+  if [ "$type" == "mysql" ]; then
+    docker_run_opts="$docker_run_opts -v $NINJA_FUN_DIR/config/mysql:/etc/mysql/mysql.conf.d"
+  fi
+  if [ "$type" == "mariadb" ]; then
+    docker_run_opts="$docker_run_opts -v $NINJA_FUN_DIR/config/mariadb:/etc/mysql/mariadb.conf.d"
+  fi
 
-  docker run ${docker_run_opts} docker.io/mariadb:${sql_version}
+  ninja-info "\tdocker run ${docker_run_opts} docker.io/${type}:${sql_version}"
+  echo -e "\n"
+
+  docker run ${docker_run_opts} docker.io/${type}:${sql_version}
 }
 
 #
@@ -76,13 +99,12 @@ __jdbc_driver_url_from_mvn__() {
 }
 
 ninja-install_jdbc_module() {
-  echo -e "\nThis installs a specified JDBC driver to WildFly/JBoss EAP module"
-  echo -e "Common used JDBC drivers:\n"
-  echo -e "JDBC Driver \t\t   Driver Version"
-  echo -e "mysql       \t\t   5.1.47"
-  echo -e "postgresql  \t\t   42.2.5"
-  echo -e "mariadb     \t\t   2.4.1"
-  echo -e "\n"
+  ninja-info "This installs a specified JDBC driver to WildFly/JBoss EAP module"
+  ninja-info "Common used JDBC drivers:"
+  ninja-info "JDBC Driver \t\t   Driver Version"
+  ninja-info "mysql       \t\t   5.1.47"
+  ninja-info "postgresql  \t\t   42.2.5"
+  ninja-info "mariadb     \t\t   2.4.1"
 
   echo -e "Usage: ninja-install_jdbc_module --jdbc mysql --version 5.1.47 --jboss_home ~/softwares/jboss-eap/jboss-eap-7.1 --jboss_module org.mysql"
 
@@ -128,7 +150,7 @@ ninja-install_jdbc_module() {
   mkdir -p ${jboss_module_dir}
   
   echo -e "Downloading jdbc driver jar from $jdbcurl to ${jboss_module_dir}"
-  wget -O ${jboss_module_dir}/$jdbc.jar "$jdbcurl"
+  wget -O ${jboss_module_dir}/$jdbc-${jdbc_version}.jar "$jdbcurl"
   if [ $? != 0 ]; then
     echo -e "Failed to download jdbc driver from maven central repository"
     return 1
@@ -138,7 +160,7 @@ cat > ${jboss_module_dir}/module.xml <<JB_MOD_XML
 <module xmlns="urn:jboss:module:1.3" name="${jboss_module}">
 
     <resources>
-        <resource-root path="$jdbc.jar"/>
+        <resource-root path="$jdbc-${jdbc_version}.jar"/>
     </resources>
 
     <dependencies>
@@ -148,9 +170,9 @@ cat > ${jboss_module_dir}/module.xml <<JB_MOD_XML
 </module>
 JB_MOD_XML
   
- echo -e "You have installed JDBC Driver of $jdbc to $WF_HOME with jboss module name: '$jboss_module'"
- echo -e "\nYou can use the following JBOSS CLI command to configure your JDBC driver and datasource:"
- echo -e "\n\t /subsystem=datasources/jdbc-driver=${jdbc}:add(driver-name=${jdbc},driver-module-name=${jboss_module})"
- echo -e "\n\t data-source add --name=xxxDS --jndi-name=java:jboss/datasources/xxxDS --connection-properties={"url": "jdbc:XXX:localhost:port/xxxDS"} --driver-name=${jdbc} --datasource-class=XXX"
+ ninja-info "You have installed JDBC Driver of $jdbc to $WF_HOME with jboss module name: '$jboss_module'"
+ ninja-info "You can use the following JBOSS CLI command to configure your JDBC driver and datasource:"
+ ninja-info "\t /subsystem=datasources/jdbc-driver=${jdbc}:add(driver-name=${jdbc},driver-module-name=${jboss_module})"
+ ninja-info "\t data-source add --name=xxxDS --jndi-name=java:jboss/datasources/xxxDS --connection-properties={"url": "jdbc:XXX:localhost:port/xxxDS"} --driver-name=${jdbc} --datasource-class=XXX"
 
 }
