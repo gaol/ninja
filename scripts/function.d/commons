@@ -13,7 +13,7 @@ root_is_required() {
 
 ninja-install_developer_packages() {
   ((root_is_required)) || return 1
-  yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute
+  yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute httpie
 }
 
 ninja-install_designer_packages() {
