@@ -1,6 +1,17 @@
 . $NINJA_FUN_DIR/commons
 
 #
+# Delete the docker container by id or name
+ninja-docker-delete-container() {
+  name="$1"
+  [ "$name" == "" ] && echo -e "Please specify the container id or name" && return 1
+  [ "$(docker ps --all | grep $name)" == "" ] && echo -e "Container id or name is not found" && return 1
+  docker stop $name
+  docker rm $name
+}
+
+
+#
 # delete all docker none images
 #
 ninja-docker_delete_none_images() {

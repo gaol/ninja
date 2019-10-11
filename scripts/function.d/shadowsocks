@@ -1,6 +1,7 @@
 #
 ## make sure docker is started
 ninja-start-shadowsocks() {
+  echo -e "Usage: ninja-start-shadowsocks --port 8080 --method aes-128-gcm --password secret-password"
   password=""
   port="8080"
   method="aes-128-gcm"
@@ -24,5 +25,6 @@ ninja-start-shadowsocks() {
   done
   [ "$password" == "" ] && ninja-warn "Password for shadowsocks must be specified" && return 1
   docker pull shadowsocks/shadowsocks-libev
-  docker run -e PASSWORD=${password} -e METHOD=$method -p${port}:8388 -p${port}:8388/udp -d shadowsocks/shadowsocks-libev
+  ninja-docker-delete-container local-shadowsocks
+  docker run --name local-shadowsocks -e PASSWORD=${password} -e METHOD=$method -p${port}:8388 -p${port}:8388/udp -d shadowsocks/shadowsocks-libev
 }
