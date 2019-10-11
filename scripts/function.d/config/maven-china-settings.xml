@@ -7,7 +7,7 @@
    <mirror>
       <id>alimaven</id>
       <name>aliyun maven</name>
-      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+      <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
       <mirrorOf>central</mirrorOf>        
     </mirror>
   </mirrors>
@@ -58,7 +58,7 @@
                 <repository>
                     <id>redhat-earlyaccess-repository-group</id>
                     <name>Red Hat early access repository</name>
-                    <url>http://maven.repository.redhat.com/earlyaccess/all/</url>
+                    <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
                     <layout>default</layout>
                     <releases>
                         <enabled>true</enabled>

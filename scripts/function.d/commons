@@ -11,9 +11,20 @@ root_is_required() {
   return 0
 }
 
-ninja-install_developer_packages() {
+ninja-install_aws_packages() {
   ((root_is_required)) || return 1
-  yum install -y  epel-release psmisc gcc gcc-c++ net-tools wget curl jq python git vim passwd less tree util-linux binutils unzip tar xz-utils gzip git-svn python2-pip golang golang-src golang-bin make sudo iproute httpie
+  yum install -y  aws-tools aws-sdk-java-lambda
+}
+
+ninja-install_basic_packages() {
+  ((root_is_required)) || return 1
+  yum install -y  epel-release
+  yum install -y  git wget curl jq pythong3-pip docker net-tools passwd sodu less tree util-linux binutils unzip tar xz-utils gzip iproute
+}
+
+ninja-install_developer_packages() {
+  ninja-install_basic_packages
+  yum install -y  psmisc gcc gcc-c++ golang golang-src golang-bin make httpie
 }
 
 ninja-install_designer_packages() {
@@ -132,3 +143,13 @@ ninja-error() {
   ninja-print_with_color "$str" "red"
 }
 
+# remove spaces in file names, replace them with underscore
+ninja-remove-filename-spaces() {
+  # find $1 -name "* *.*" -type f -print0 | while read -d $'\0' f; do mv -v "$f" "${f// /_}"; done
+  cwd=`pwd`
+  filetype="$1"
+  if [ "$filetype" == "" ]; then
+    filetype="*.*"
+  fi
+  find $cwd -name "$filetype" -type f -print0 | while read -d $'\0' f; do [[ "$f" != "${f%[[:space:]]*}" ]] && mv -v "$f" "${f// /_}" ; done
+}

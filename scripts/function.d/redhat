@@ -1,0 +1,4 @@
+## Search Redhat People
+ninja-redhat_search() {
+ ldapsearch -x -h ldap.corp.redhat.com $@
+}

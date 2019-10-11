@@ -5,3 +5,4 @@ alias mvn-with-jboss-repo='mvn -s $NINJA_FUN_DIR/config/jboss-public-settings.xm
 alias mvnchina='mvn -s $NINJA_FUN_DIR/config/maven-china-settings.xml'
 alias docker-local='docker -H unix:///var/run/docker.sock'
 alias docker-run-remove='docker -H unix:///var/run/docker.sock run --rm'
+alias mvn-quarkus-docker='mvn clean package -Pnative -Dnative-image.docker-build=true'
