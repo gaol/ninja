@@ -17,3 +17,5 @@ fi
 
 popd
 
+. ~/.bashrc
+
