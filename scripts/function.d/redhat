@@ -1,4 +1,8 @@
 ## Search Redhat People
-ninja-redhat_search() {
+ninja_redhat_search() {
+ if [ "$#" == 0 ]; then
+   echo -e "Please specify what to search, like: uid=xxx"
+   return 1
+ fi
  ldapsearch -x -h ldap.corp.redhat.com $@
 }

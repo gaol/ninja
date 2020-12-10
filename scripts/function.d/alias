@@ -1,8 +1,31 @@
-alias cls='clear'
-alias l='ls -l'
-alias lll='ls -lah'
-alias mvn-with-jboss-repo='mvn -s $NINJA_FUN_DIR/config/jboss-public-settings.xml'
-alias mvnchina='mvn -s $NINJA_FUN_DIR/config/maven-china-settings.xml'
-alias docker-local='docker -H unix:///var/run/docker.sock'
-alias docker-run-remove='docker -H unix:///var/run/docker.sock run --rm'
-alias mvn-quarkus-docker='mvn clean package -Pnative -Dnative-image.docker-build=true'
+
+cls(){
+  clear
+}
+
+l(){
+  ls -l $@
+}
+
+lll(){
+  ls -lah $@
+}
+
+mvn_with_jboss(){
+  mvn -s $NINJA_FUN_DIR/config/jboss-public-settings.xml $@
+}
+
+mvnchina(){
+  mvn -s $NINJA_FUN_DIR/config/maven-china-settings.xml $@
+}
+
+docker_local(){
+  docker -H unix:///var/run/docker.sock $@
+}
+
+mvn_skiptests(){
+  mvn -DskipTests $@
+}
+
+alias mvn_quarkus_native='mvn -Pnative -Dnative-image.docker-build=true'
+alias mvn_quarkus_skiptests='mvn -DskipTests -Dquarkus.build.skip=false'

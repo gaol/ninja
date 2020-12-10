@@ -1,21 +1,21 @@
 . $NINJA_FUN_DIR/commons
 
-ninja-convert_media() {
+ninja_convert_media() {
   echo -e "\nWorkdir is: `pwd`"
   echo -e "\nUsing the command: \"docker run --rm -v `pwd`:/tmp/workdir jrottenberg/ffmpeg $*\" for the convertion"
-  ninja-warn "NOTE: space are not allowed in the file name. !!!"
+  ninja_warn "NOTE: space are not allowed in the file name. !!!"
   echo -e "\nSome ffmpeg tips:"
-  echo -e "\tCut vidoe: \t -i input.mkv -ss hh:mm:ss -to hh:mm:ss -c copy output.mkv"
+  echo -e "\tCut vidoe: \t -i input.mkv -ss hh:mm:ss.SSS -to hh:mm:ss.SSS -c copy output.mkv"
   echo -e "\tExtract audio: \t -i input.mp4 -f mp3 -ab 192000 -vn output.mp3"
   echo -e "\tReduce file size: \t -i input.mp4 -f mp3 -ab 192000 -vn output.mp3"
   echo -e "\nPassing -an to diable audio\n"
-  echo -e "\nFor more help, please run: ${COLOR_RED}ninja-convert_media help${COLOR_ORIGIN}\n"
+  echo -e "\nFor more help, please run: ${COLOR_RED}ninja_convert_media help${COLOR_ORIGIN}\n"
 
   if [ $# -gt 0 ]; then
     if [ "$1" == "help" ]; then
       less $NINJA_FUN_DIR/config/ffmpeg.md
       return 0
     fi
-    docker run --rm -v `pwd`:/tmp/workdir  jrottenberg/ffmpeg $*
+    docker run --rm -v `pwd`:/tmp/workdir -v /etc/fonts:/etc/fonts -e FONTCONFIG_PATH=/etc/fonts jrottenberg/ffmpeg $*
   fi
 }

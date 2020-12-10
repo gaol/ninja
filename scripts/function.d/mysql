@@ -1,10 +1,10 @@
 . $NINJA_FUN_DIR/commons
 
-ninja-start_mysql_docker() {
-  ninja-info "This will start a mysql server in a docker container in daemon mode."
-  ninja-info "Typical docker containers are: mysql:5.7 , mariadb:10.3"
+ninja_start_mysql_docker() {
+  ninja_info "This will start a mysql server in a docker container in daemon mode."
+  ninja_info "Typical docker containers are: mysql:5.7 , mariadb:10.3"
   echo -e ""
-  ninja-info "Usage: start_mysql_docker --port 3306 --root-pwd the-root-pwd --db_name keycloak --db_user keycloak --db_pass keycloak --type mysql --sql_version 5.7 --volume /opt/data/mysql/keycloak --name local_mysql_docker_name"
+  ninja_info "Usage: start_mysql_docker --port 3306 --root-pwd the-root-pwd --db_name keycloak --db_user keycloak --db_pass keycloak --type mysql --sql_version 5.7 --volume /opt/data/mysql/keycloak --name local_mysql_docker_name"
   echo -e ""
 
   mysql_port="3306"
@@ -54,10 +54,10 @@ ninja-start_mysql_docker() {
     shift
   done
 
-  [ "$db_name" == "" -o "$db_user" == "" -o "$db_pass" == "" ] && ninja-warn "db_name and db_user and db_pass must be specified." && return 1
-  [ "$type" != "mysql" -a "$type" != "mariadb" ] && ninja-warn "Docker Image must be one of 'mysql' and 'mariadb'" && return 1
+  [ "$db_name" == "" -o "$db_user" == "" -o "$db_pass" == "" ] && ninja_warn "db_name and db_user and db_pass must be specified." && return 1
+  [ "$type" != "mysql" -a "$type" != "mariadb" ] && ninja_warn "Docker Image must be one of 'mysql' and 'mariadb'" && return 1
 
-  ninja-info "Going to use the following command to start the mysql server:"
+  ninja_info "Going to use the following command to start the mysql server:"
 
   docker_run_opts="--rm -p ${mysql_port}:3306 -e MYSQL_ROOT_PASSWORD=${root_password} -e MYSQL_DATABASE=${db_name} -e MYSQL_USER=${db_user} -e MYSQL_PASSWORD=${db_pass} --name ${docker_container_name} "
 
@@ -71,7 +71,7 @@ ninja-start_mysql_docker() {
     docker_run_opts="$docker_run_opts -v $NINJA_FUN_DIR/config/mariadb:/etc/mysql/mariadb.conf.d"
   fi
 
-  ninja-info "\tdocker run ${docker_run_opts} docker.io/${type}:${sql_version}"
+  ninja_info "\tdocker run ${docker_run_opts} docker.io/${type}:${sql_version}"
   echo -e "\n"
 
   docker run ${docker_run_opts} docker.io/${type}:${sql_version}
@@ -98,15 +98,15 @@ __jdbc_driver_url_from_mvn__() {
   esac
 }
 
-ninja-install_jdbc_module() {
-  ninja-info "This installs a specified JDBC driver to WildFly/JBoss EAP module"
-  ninja-info "Common used JDBC drivers:"
-  ninja-info "JDBC Driver \t\t   Driver Version"
-  ninja-info "mysql       \t\t   5.1.47"
-  ninja-info "postgresql  \t\t   42.2.5"
-  ninja-info "mariadb     \t\t   2.4.1"
+ninja_install_jdbc_module() {
+  ninja_info "This installs a specified JDBC driver to WildFly/JBoss EAP module"
+  ninja_info "Common used JDBC drivers:"
+  ninja_info "JDBC Driver \t\t   Driver Version"
+  ninja_info "mysql       \t\t   5.1.47"
+  ninja_info "postgresql  \t\t   42.2.5"
+  ninja_info "mariadb     \t\t   2.4.1"
 
-  echo -e "Usage: ninja-install_jdbc_module --jdbc mysql --version 5.1.47 --jboss_home ~/softwares/jboss-eap/jboss-eap-7.1 --jboss_module org.mysql"
+  echo -e "Usage: ninja_install_jdbc_module --jdbc mysql --version 5.1.47 --jboss_home ~/softwares/jboss-eap/jboss-eap-7.1 --jboss_module org.mysql"
 
   jdbc="mysql"
   jdbc_version="5.1.47"
@@ -170,9 +170,9 @@ cat > ${jboss_module_dir}/module.xml <<JB_MOD_XML
 </module>
 JB_MOD_XML
   
- ninja-info "You have installed JDBC Driver of $jdbc to $WF_HOME with jboss module name: '$jboss_module'"
- ninja-info "You can use the following JBOSS CLI command to configure your JDBC driver and datasource:"
- ninja-info "\t /subsystem=datasources/jdbc-driver=${jdbc}:add(driver-name=${jdbc},driver-module-name=${jboss_module})"
- ninja-info "\t data-source add --name=xxxDS --jndi-name=java:jboss/datasources/xxxDS --connection-properties={"url": "jdbc:XXX:localhost:port/xxxDS"} --driver-name=${jdbc} --datasource-class=XXX"
+ ninja_info "You have installed JDBC Driver of $jdbc to $WF_HOME with jboss module name: '$jboss_module'"
+ ninja_info "You can use the following JBOSS CLI command to configure your JDBC driver and datasource:"
+ ninja_info "\t /subsystem=datasources/jdbc-driver=${jdbc}:add(driver-name=${jdbc},driver-module-name=${jboss_module})"
+ ninja_info "\t data-source add --name=xxxDS --jndi-name=java:jboss/datasources/xxxDS --connection-properties={"url": "jdbc:XXX:localhost:port/xxxDS"} --driver-name=${jdbc} --datasource-class=XXX"
 
 }

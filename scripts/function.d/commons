@@ -11,28 +11,28 @@ root_is_required() {
   return 0
 }
 
-ninja-install_aws_packages() {
+ninja_install_aws_packages() {
   ((root_is_required)) || return 1
   yum install -y  aws-tools aws-sdk-java-lambda
 }
 
-ninja-install_basic_packages() {
+ninja_install_basic_packages() {
   ((root_is_required)) || return 1
   yum install -y  epel-release
   yum install -y  git wget curl jq pythong3-pip docker net-tools passwd sodu less tree util-linux binutils unzip tar xz-utils gzip iproute
 }
 
-ninja-install_developer_packages() {
-  ninja-install_basic_packages
+ninja_install_developer_packages() {
+  ninja_install_basic_packages
   yum install -y  psmisc gcc gcc-c++ golang golang-src golang-bin make httpie
 }
 
-ninja-install_designer_packages() {
+ninja_install_designer_packages() {
   ((root_is_required)) || return 1
   yum install -y  gpick inkscape gimp ImageMagick screenruler kruler
 }
 
-ninja-setup_ubuntu_aliyun_repo() {
+ninja_setup_ubuntu_aliyun_repo() {
   ((root_is_required)) || return 1
   cat <<EOF >/etc/apt/sources.list.d/aliyun.list
   deb http://mirrors.aliyun.com/ubuntu/ xenial main
@@ -57,7 +57,7 @@ EOF
 #
 # prints out upper case of a string
 #
-ninja-string_to_upper() {
+ninja_string_to_upper() {
   if [ "$1" != "" ]; then
     echo $1 |awk '{print toupper($0)}'
   fi
@@ -66,7 +66,7 @@ ninja-string_to_upper() {
 #
 # prints out lower case of a string
 #
-ninja-string_to_lower() {
+ninja_string_to_lower() {
   if [ "$1" != "" ]; then
     echo $1 |awk '{print tolower($0)}'
   fi
@@ -83,8 +83,8 @@ COLOR_BLUE="\e[34m"
 #
 # $1 is the string, $2 is the color
 #
-ninja-print_with_color() {
-  str_color="$(ninja-string_to_lower $2)"
+ninja_print_with_color() {
+  str_color="$(ninja_string_to_lower $2)"
   str="$1"
   case $str_color in
   "red"*)
@@ -102,7 +102,7 @@ ninja-print_with_color() {
   echo -e "$str"
 }
 
-ninja-date() {
+ninja_date() {
   str=`date "+%Y-%m-%d %H:%M:%S"`
   echo -e "$str"
 }
@@ -111,40 +111,40 @@ ninja-date() {
 # DEBUG
 # $1: the information to log in debug level
 #
-ninja-debug() {
-  str="[DEBUG] `ninja-date` $1"
-  ninja-print_with_color "$str" "blue"
+ninja_debug() {
+  str="[DEBUG] `ninja_date` $1"
+  ninja_print_with_color "$str" "blue"
 }
 
 #
 # INFO
 # $1: the information to log in info level
 #
-ninja-info() {
-  str="[INFO] `ninja-date` $1"
-  ninja-print_with_color "$str"
+ninja_info() {
+  str="[INFO] `ninja_date` $1"
+  ninja_print_with_color "$str"
 }
 
 #
 # WARN
 # $1: the information to log in warning level
 #
-ninja-warn() {
-  str="[WARN] `ninja-date` $1"
-  ninja-print_with_color "$str" "yellow"
+ninja_warn() {
+  str="[WARN] `ninja_date` $1"
+  ninja_print_with_color "$str" "yellow"
 }
 
 #
 # ERROR
 # $1: the information to log in error level
 #
-ninja-error() {
-  str="[ERROR] `ninja-date` $1"
-  ninja-print_with_color "$str" "red"
+ninja_error() {
+  str="[ERROR] `ninja_date` $1"
+  ninja_print_with_color "$str" "red"
 }
 
 # remove spaces in file names, replace them with underscore
-ninja-remove-filename-spaces() {
+ninja_remove_filename_spaces() {
   # find $1 -name "* *.*" -type f -print0 | while read -d $'\0' f; do mv -v "$f" "${f// /_}"; done
   cwd=`pwd`
   filetype="$1"

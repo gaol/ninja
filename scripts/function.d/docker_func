@@ -2,7 +2,7 @@
 
 #
 # Delete the docker container by id or name
-ninja-docker-delete-container() {
+ninja_docker_delete_container() {
   name="$1"
   [ "$name" == "" ] && echo -e "Please specify the container id or name" && return 1
   [ "$(docker ps --all | grep $name)" == "" ] && echo -e "Container id or name is not found" && return 1
@@ -14,7 +14,7 @@ ninja-docker-delete-container() {
 #
 # delete all docker none images
 #
-ninja-docker_delete_none_images() {
+ninja_docker_delete_none_images() {
   if [ "$(docker images -f "dangling=true" -q)" != "" ]; then
     for img in $(docker images -f "dangling=true" -q); do
       if [ "$(docker ps --all -q -f "ancestor=$img")" != "" ]; then
@@ -33,9 +33,18 @@ ninja-docker_delete_none_images() {
 # delete all docker containers.
 # Stop them first, then delete them.
 #
-ninja-docker_delete_all_containers() {
+ninja_docker_delete_all_containers() {
   if [ "$(docker ps -aq)" != "" ]; then
     docker stop $(docker ps -aq)
     docker rm $(docker ps -aq)
   fi
+}
+
+#
+# Gets Docker container IP
+#
+ninja_docker_get_docker_ip() {
+  cid="$1"
+  [ "$cid" == "" ] && echo -e "Please specify container id to insepect" && return 1
+  docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $cid
 }

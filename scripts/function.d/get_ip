@@ -3,26 +3,26 @@
 #
 #  get_ip_v4_all print out all IP V4 address
 #
-ninja-get_ip_v4_all() {
+ninja_get_ip_v4_all() {
   ipv4=$(ip addr show scope global | awk '{if($1 == "inet"){ split($2,ip,"/"); print ip[1]}}')
   echo "$ipv4"
 }
 
 #
 # prints out the first IP v4 address
-ninja-get_ip_v4() {
-  ipv4count=$(ninja-get_ip_v4_all | wc -l)
+ninja_get_ip_v4() {
+  ipv4count=$(ninja_get_ip_v4_all | wc -l)
   if ((ipv4count == 1)); then
-    ninja-get_ip_v4_all
+    ninja_get_ip_v4_all
   elif ((ipv4count > 1)); then
-    echo "$(ninja-get_ip_v4_all | awk 'FNR==1 {print $1}')"
+    echo "$(ninja_get_ip_v4_all | awk 'FNR==1 {print $1}')"
   fi
 }
 
 #
 # get_default_iface print out the default network interface if any
 #
-ninja-get_default_iface() {
+ninja_get_default_iface() {
   diface=$(netstat -rn | awk '{ if ($1 == "0.0.0.0") print $NF}')
   if [ "$diface" != "" ]; then
     echo $diface
@@ -32,11 +32,11 @@ ninja-get_default_iface() {
 #
 # prints out default MAC address if default network interface is available
 #
-ninja-get_default_mac_addr() {
-  diface=$(ninja-get_default_iface)
+ninja_get_default_mac_addr() {
+  diface=$(ninja_get_default_iface)
   if [ "$diface" != "" ]; then
     macaddr=$(ip addr show $diface | awk '{if($1 == "link/ether") {print $2}}')
-    fupper=$(ninja-string_to_upper "$macaddr")
+    fupper=$(ninja_string_to_upper "$macaddr")
     echo $fupper
   fi
 }

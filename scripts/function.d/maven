@@ -1,0 +1,45 @@
+. $NINJA_FUN_DIR/commons
+
+
+#
+# Executes mvn package until failure happens
+#
+ninja_mvn_test_loop() {
+  echo -e "\n"
+  goal="clean package"
+  fail="(BUILD FAILURE)|(NullPointerException)"
+  ninja_info "Usage: ninja_mvn_test_loop --goal \"clean package\" --fail \"(BUILD FAILURE)|(NullPointerException)\""
+
+  while (( "$#" )); do
+    case "$1" in
+    "--goal"*)
+      goal="$2"
+      ;;
+    "--fail"*)
+      fail="$2"
+      ;;
+    *)
+      ;;
+    esac
+
+    shift
+    shift
+  done
+
+  echo -e "Runs the mvn $goal until $fail is found."
+  start="`date`"
+  times=0
+  while(true); do
+    times=$((times + 1))
+    mvn ${goal} 2>&1 |tee build.log;
+    r=`cat build.log|egrep -a10 "${fail}"`;
+    if [ "$r" != "" ]; then
+      echo -e "\n"
+      echo -n "Started at: $start. Running times: $times.  Failed! at: "; date;
+      echo -e "\n=======================================\n";
+      echo -e "$r";
+      echo -e "\n=======================================\n";
+      break;
+    fi
+  done
+}

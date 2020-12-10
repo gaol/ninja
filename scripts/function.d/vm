@@ -3,7 +3,7 @@
 #
 # automatic install a KVM
 #
-ninja-install_kvm() {
+ninja_install_kvm() {
   #((root_is_required)) || return 1
   
   echo -e "\nInstall a VM automatically with required information"
@@ -51,19 +51,19 @@ ninja-install_kvm() {
   done
 
   if [ "$name" == "" -o "$disk_path" == "" -o "$iso_path" == "" -o "$ks_path" == "" ]; then
-    echo -e "\n\e[31mUsage: ninja-install_kvm --name VM_NAME --memory MEMORY[default: 2048] --vcpus VCPUS[default: 2] --disk_path VM_IMG_PATH --disk_size DISK_SIZE[default: 10] --network NETWORK[default: bridge=virbr0] --iso_path LINUX_ISO_FILE --ks_path Kick_Start_File \e[0m\n"
+    echo -e "\n\e[31mUsage: ninja_install_kvm --name VM_NAME --memory MEMORY[default: 2048] --vcpus VCPUS[default: 2] --disk_path VM_IMG_PATH --disk_size DISK_SIZE[default: 10] --network NETWORK[default: bridge=virbr0] --iso_path LINUX_ISO_FILE --ks_path Kick_Start_File \e[0m\n"
     return 1
   fi
   if [ ! -f "$iso_path" ]; then
-    ninja-error "Linux ISO file: $iso_path does not exist!"
+    ninja_error "Linux ISO file: $iso_path does not exist!"
     return 1
   fi
   if [ "`file $iso_path |grep \"ISO 9660\"`" == "" ]; then
-    ninja-error "$iso_path is not a valid ISO file"
+    ninja_error "$iso_path is not a valid ISO file"
     return 1
   fi
   if [ ! -f "$ks_path" ]; then
-    ninja-error "Linux Kick start file: $ks_path does not exist!"
+    ninja_error "Linux Kick start file: $ks_path does not exist!"
     return 1
   fi
   ks_base_name=`basename $ks_path`
@@ -99,7 +99,7 @@ ninja-install_kvm() {
 #
 # get IP of a VM
 #
-ninja-get_vm_ip() {
+ninja_get_vm_ip() {
     VM="$1"
     if [ "$VM" == "" ]; then
       echo -e "[Usage]: ninja_get_vm_ip<VM-NAME>"
