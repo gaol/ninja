@@ -3,18 +3,55 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-  <mirrors>
+  <!--mirrors>
    <mirror>
       <id>alimaven</id>
       <name>aliyun maven</name>
       <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
       <mirrorOf>central</mirrorOf>        
     </mirror>
-  </mirrors>
+  </mirrors-->
     <pluginGroups>
         <pluginGroup>org.jboss.maven.plugins</pluginGroup>
     </pluginGroups>
     <profiles>
+
+        <profile>
+            <id>aliyun-maven-repo</id>
+            <repositories>
+                <repository>
+                    <id>alimaven</id>
+                    <name>Aliyun Maven Repository Mirror</name>
+                    <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>alimaven</id>
+                    <name>Aliyun Maven Repository Mirror</name>
+                    <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
         <profile>
             <id>jboss-public-repository</id>
             <repositories>
@@ -35,9 +72,9 @@
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
-                    <id>jboss-public-repository-group</id>
-                    <name>JBoss Public Maven Repository Group</name>
-                    <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+                    <id>redhat-repository-group</id>
+                    <name>Red Hat repository</name>
+                    <url>https://maven.repository.redhat.com/ga/</url>
                     <layout>default</layout>
                     <releases>
                         <enabled>true</enabled>
@@ -53,12 +90,12 @@
 
         <!-- Include early access of application server and other products -->
         <profile>
-            <id>redhat-earlyaccess-repository</id>
+            <id>redhat-repository</id>
             <repositories>
                 <repository>
-                    <id>redhat-earlyaccess-repository-group</id>
-                    <name>Red Hat early access repository</name>
-                    <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
+                    <id>redhat-repository-group</id>
+                    <name>Red Hat repository</name>
+                    <url>https://maven.repository.redhat.com/ga/</url>
                     <layout>default</layout>
                     <releases>
                         <enabled>true</enabled>
@@ -72,46 +109,11 @@
             </repositories>
         </profile>
 
-        <profile>
-            <id>maven-central</id>
-            <repositories>
-                <repository>
-                    <id>central</id>
-                    <name>Maven Central Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <layout>default</layout>
-                    <releases>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </snapshots>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>central</id>
-                    <name>Maven Central Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <layout>default</layout>
-                    <releases>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </snapshots>
-                </pluginRepository>
-            </pluginRepositories>
-        </profile>
     </profiles>
 
     <activeProfiles>
+        <activeProfile>aliyun-maven-repo</activeProfile>
         <activeProfile>jboss-public-repository</activeProfile>
-        <activeProfile>redhat-earlyaccess-repository</activeProfile>
-        <activeProfile>maven-central</activeProfile>
+        <activeProfile>redhat-repository</activeProfile>
     </activeProfiles>
 </settings>
