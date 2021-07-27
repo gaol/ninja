@@ -31,6 +31,7 @@ ninja_mvn_test_loop() {
   times=0
   while(true); do
     times=$((times + 1))
+    echo -n "\n ======================  Start the $times time. =====================\n";
     mvn ${goal} 2>&1 |tee build.log;
     r=`cat build.log|egrep -a10 "${fail}"`;
     if [ "$r" != "" ]; then
